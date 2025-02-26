@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
+
+## [0.45.0] - 2025-02-26
 This is the first release under the stewardship of [Linebender][], who is now responsible for maintenance of this crate.
 Many thanks to Yevhenii Reizner for the years of hard work that he has poured into this and other crates.
 
@@ -33,6 +35,7 @@ This release has an MSRV of 1.65 for `usvg` and 1.67.1 for `resvg` and the C API
 - `fontdb` and `rustybuzz` have been updated.
 - Updated other dependencies.
 - (svgtypes) Simplified color component rounding and bounds checking.
+- Improved handling of paths with paint order `markers` but no actual markers.
 
 ### Fixed
 - Relative unit handling when `use` references `symbol`.
@@ -1270,7 +1273,8 @@ This release has an MSRV of 1.65 for `usvg` and 1.67.1 for `resvg` and the C API
 [@michabay05]: https://github.com/michabay05
 [@Shnatsel]: https://github.com/Shnatsel
 
-[Unreleased]: https://github.com/linebender/resvg/compare/v0.44.0...HEAD
+[Unreleased]: https://github.com/linebender/resvg/compare/v0.45.0...HEAD
+[0.45.0]: https://github.com/linebender/resvg/compare/v0.44.0...v0.45.0
 [0.44.0]: https://github.com/linebender/resvg/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/linebender/resvg/compare/v0.42.0...v0.43.0
 [0.42.0]: https://github.com/linebender/resvg/compare/v0.41.0...v0.42.0
