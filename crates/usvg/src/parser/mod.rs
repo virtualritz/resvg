@@ -105,6 +105,42 @@ impl crate::Tree {
         }
     }
 
+    /// Similar to the `from_data` method, except that it removes all `image` elements,
+    /// as required by the SVG specification when SVG files are loaded for `<image href="..." />` tags.
+    pub fn from_data_nested(data: &[u8], opt: &Options) -> Result<Self, Error> {
+        let nested_opt = Options {
+            resources_dir: None,
+            dpi: opt.dpi,
+            font_size: opt.font_size,
+            languages: opt.languages.clone(),
+            shape_rendering: opt.shape_rendering,
+            text_rendering: opt.text_rendering,
+            image_rendering: opt.image_rendering,
+            default_size: opt.default_size,
+            // The referenced SVG image cannot have any 'image' elements by itself.
+            // Not only recursive. Any. Don't know why.
+            image_href_resolver: ImageHrefResolver {
+                resolve_data: Box::new(|_, _, _| None),
+                resolve_string: Box::new(|_, _| None),
+            },
+            // In the referenced SVG, we start with the unmodified user-provided
+            // fontdb, not the one from the cache.
+            #[cfg(feature = "text")]
+            fontdb: opt.fontdb.clone(),
+            // Can't clone the resolver, so we create a new one that forwards to it.
+            #[cfg(feature = "text")]
+            font_resolver: crate::FontResolver {
+                select_font: Box::new(|font, db| (opt.font_resolver.select_font)(font, db)),
+                select_fallback: Box::new(|c, used_fonts, db| {
+                    (opt.font_resolver.select_fallback)(c, used_fonts, db)
+                }),
+            },
+            ..Options::default()
+        };
+
+        Self::from_data(data, &nested_opt)
+    }
+
     /// Parses `Tree` from an SVG string.
     pub fn from_str(text: &str, opt: &Options) -> Result<Self, Error> {
         let xml_opt = roxmltree::ParsingOptions {
