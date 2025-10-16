@@ -540,12 +540,17 @@ impl Default for LineJoin {
 /// A stroke style.
 #[derive(Clone, Debug)]
 pub struct Stroke {
-    pub(crate) paint: Paint,
-    pub(crate) dasharray: Option<Vec<f32>>,
-    pub(crate) dashoffset: f32,
+    /// Stroke paint.
+    pub paint: Paint,
+    /// Stroke dash array.
+    pub dasharray: Option<Vec<f32>>,
+    /// Stroke dash offset.
+    pub dashoffset: f32,
     pub(crate) miterlimit: StrokeMiterlimit,
-    pub(crate) opacity: Opacity,
-    pub(crate) width: StrokeWidth,
+    /// Stroke opacity.
+    pub opacity: Opacity,
+    /// Stroke width.
+    pub width: StrokeWidth,
     pub(crate) linecap: LineCap,
     pub(crate) linejoin: LineJoin,
     // Whether the current stroke needs to be resolved relative
@@ -656,8 +661,10 @@ pub(crate) enum ContextElement {
 /// A fill style.
 #[derive(Clone, Debug)]
 pub struct Fill {
-    pub(crate) paint: Paint,
-    pub(crate) opacity: Opacity,
+    /// Fill paint.
+    pub paint: Paint,
+    /// Fill opacity.
+    pub opacity: Opacity,
     pub(crate) rule: FillRule,
     // Whether the current fill needs to be resolved relative
     // to a context element.
@@ -993,10 +1000,13 @@ impl Node {
 /// `g` element in SVG.
 #[derive(Clone, Debug)]
 pub struct Group {
-    pub(crate) id: String,
-    pub(crate) transform: Transform,
+    /// Element's ID.
+    pub id: String,
+    /// Element's transform.
+    pub transform: Transform,
     pub(crate) abs_transform: Transform,
-    pub(crate) opacity: Opacity,
+    /// Group opacity.
+    pub opacity: Opacity,
     pub(crate) blend_mode: BlendMode,
     pub(crate) isolate: bool,
     pub(crate) clip_path: Option<Arc<ClipPath>>,
@@ -1010,7 +1020,8 @@ pub struct Group {
     pub(crate) abs_stroke_bounding_box: Rect,
     pub(crate) layer_bounding_box: NonZeroRect,
     pub(crate) abs_layer_bounding_box: NonZeroRect,
-    pub(crate) children: Vec<Node>,
+    /// Group's children.
+    pub children: Vec<Node>,
 }
 
 impl Group {
@@ -1240,10 +1251,14 @@ impl Default for PaintOrder {
 /// A path element.
 #[derive(Clone, Debug)]
 pub struct Path {
-    pub(crate) id: String,
-    pub(crate) visible: bool,
-    pub(crate) fill: Option<Fill>,
-    pub(crate) stroke: Option<Stroke>,
+    /// Element's ID.
+    pub id: String,
+    /// Element visibility.
+    pub visible: bool,
+    /// Fill style.
+    pub fill: Option<Fill>,
+    /// Stroke style.
+    pub stroke: Option<Stroke>,
     pub(crate) paint_order: PaintOrder,
     pub(crate) rendering_mode: ShapeRendering,
     pub(crate) data: Arc<tiny_skia_path::Path>,
@@ -1589,6 +1604,22 @@ impl Tree {
         node_by_id(&self.root, id)
     }
 
+    /// Returns a mutable renderable node by ID.
+    ///
+    /// If an empty ID is provided, than this method will always return `None`.
+    pub fn node_by_id_mut(&mut self, id: &str) -> Option<&mut Node> {
+        if id.is_empty() {
+            return None;
+        }
+
+        node_by_id_mut(&mut self.root, id)
+    }
+
+    /// Returns a mutable reference to the root group.
+    pub fn root_mut(&mut self) -> &mut Group {
+        &mut self.root
+    }
+
     /// Checks if the current tree has any text nodes.
     pub fn has_text_nodes(&self) -> bool {
         has_text_nodes(&self.root)
@@ -1668,6 +1699,22 @@ fn node_by_id<'a>(parent: &'a Group, id: &str) -> Option<&'a Node> {
 
         if let Node::Group(ref g) = child {
             if let Some(n) = node_by_id(g, id) {
+                return Some(n);
+            }
+        }
+    }
+
+    None
+}
+
+fn node_by_id_mut<'a>(parent: &'a mut Group, id: &str) -> Option<&'a mut Node> {
+    for child in &mut parent.children {
+        if child.id() == id {
+            return Some(child);
+        }
+
+        if let Node::Group(ref mut g) = child {
+            if let Some(n) = node_by_id_mut(g, id) {
                 return Some(n);
             }
         }

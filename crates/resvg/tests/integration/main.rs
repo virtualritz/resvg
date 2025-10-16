@@ -125,12 +125,10 @@ pub fn render_inner(name: &str, test_mode: TestMode) -> usize {
 
     let reference_image = if let Ok(image_data) = std::fs::read(&png_path) {
         load_png(image_data)
+    } else if make_ref {
+        make_ref_fn();
     } else {
-        if make_ref {
-            make_ref_fn();
-        } else {
-            panic!("missing reference image");
-        }
+        panic!("missing reference image");
     };
 
     if let Some((diff_image, pixel_diff)) = get_diff(&reference_image, &actual_image) {
@@ -310,7 +308,7 @@ impl TestImage {
 
     fn save_png(&self, path: &str) {
         let file = File::create(path).unwrap();
-        let ref mut w = BufWriter::new(file);
+        let w = &mut BufWriter::new(file);
 
         let mut encoder = Encoder::new(w, self.width, self.height);
         encoder.set_color(ColorType::Rgba);

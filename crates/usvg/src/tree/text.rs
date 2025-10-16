@@ -274,8 +274,10 @@ impl TextDecoration {
 pub struct TextSpan {
     pub(crate) start: usize,
     pub(crate) end: usize,
-    pub(crate) fill: Option<Fill>,
-    pub(crate) stroke: Option<Stroke>,
+    /// A fill style.
+    pub fill: Option<Fill>,
+    /// A stroke style.
+    pub stroke: Option<Stroke>,
     pub(crate) paint_order: PaintOrder,
     pub(crate) font: Font,
     pub(crate) font_size: NonZeroPositiveF32,
@@ -457,7 +459,8 @@ pub struct TextChunk {
     pub(crate) x: Option<f32>,
     pub(crate) y: Option<f32>,
     pub(crate) anchor: TextAnchor,
-    pub(crate) spans: Vec<TextSpan>,
+    /// A list of text chunk style spans.
+    pub spans: Vec<TextSpan>,
     pub(crate) text_flow: TextFlow,
     pub(crate) text: String,
 }
@@ -507,13 +510,15 @@ pub enum WritingMode {
 /// `text` element in SVG.
 #[derive(Clone, Debug)]
 pub struct Text {
-    pub(crate) id: String,
+    /// Element's ID.
+    pub id: String,
     pub(crate) rendering_mode: TextRendering,
     pub(crate) dx: Vec<f32>,
     pub(crate) dy: Vec<f32>,
     pub(crate) rotate: Vec<f32>,
     pub(crate) writing_mode: WritingMode,
-    pub(crate) chunks: Vec<TextChunk>,
+    /// A list of text chunks.
+    pub chunks: Vec<TextChunk>,
     pub(crate) abs_transform: Transform,
     pub(crate) bounding_box: Rect,
     pub(crate) abs_bounding_box: Rect,
